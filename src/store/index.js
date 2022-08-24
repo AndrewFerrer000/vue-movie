@@ -13,8 +13,12 @@ export default createStore({
     }
   },
   actions: {
-    async getMovies(context, payload = 1) {
-      const response = await axios.get(`https://api.themoviedb.org/3/discover/movie?api_key=${context.state.apiKey}&page=${payload}`)
+    async getMovies(context, page = 1) {
+      const response = await axios.get(`https://api.themoviedb.org/3/discover/movie?api_key=${context.state.apiKey}&page=${page}`)
+      context.commit("SET_MOVIE", response.data.results);
+    },
+    async searchMovies(context, {keyword, page = 1}) {
+      const response = await axios.get(`https://api.themoviedb.org/3/search/movie?api_key=${context.state.apiKey}&page=${page}&query=${keyword}`);
       context.commit("SET_MOVIE", response.data.results);
     }
   } ,

@@ -4,11 +4,11 @@
     <div class="w-full flex flex-col gap-y-4 items-center justify-center h-72">
       <h1 class="text-2xl mb-5">Browse your favorites movie here in <span class="font-semibold"><span class="text-green-500">Vue</span> Movie</span></h1>
       <!-- Search -->
-      <div class="w-1/4 relative flex mb-4 gap-4">
-        <input type="search" class="form-control relative flex-auto min-w-0 block w-full px-3 py-1.5 text-base font-normal text-gray-700 bg-white border border-solid border-gray-300 rounded transition ease-in-out m-0 focus:text-gray-700 focus:bg-white focus:border-green-600 focus:outline-none" placeholder="Search" aria-label="Search" aria-describedby="button-addon2">
-        <button class="btn px-5 py-1.5 bg-green-500 text-white font-medium text-xs leading-tight uppercase rounded shadow-md hover:bg-green-700 hover:shadow-lg focus:bg-green-700  focus:shadow-lg focus:outline-none focus:ring-0 active:bg-green-800 active:shadow-lg transition duration-150 ease-in-out flex items-center" type="button">
+      <div class="w-1/4 relative flex mb-4">
+        <div class="px-4 py-1.5 bg-green-500 text-white font-medium text-xs leading-tight rounded-tl rounded-bl flex items-center">
           <i class='bx bx-search text-2xl' ></i>
-        </button>
+        </div>
+        <input @keyup="searchMovies" v-model="keyword" type="search" class="form-control relative flex-auto min-w-0 block w-full px-3 py-1.5 text-base font-normal text-gray-700 bg-white border border-solid border-gray-300 rounded-tr rounded-br transition ease-in-out m-0 focus:text-gray-700 focus:bg-white focus:border-green-600 focus:outline-none" placeholder="Search" aria-label="Search" aria-describedby="button-addon2">
       </div>
       <!-- Filter -->
       <div class="w-1/4 flex justify-around">
@@ -69,10 +69,11 @@
       <!-- Card Container -->
       <div class="flex flex-wrap justify-center gap-8">
         <!-- Individual Card -->
-        <div class=" overflow-hidden w-56" v-for="movie in movies" :key="movie">
+        <div class=" overflow-hidden w-56 h-auto" v-for="movie in movies" :key="movie">
           <!-- Image -->
           <div class="relative overflow-hidden bg-no-repeat bg-cover rounded-lg">
-            <img :src='$store.state.thumbRootURL + movie.poster_path' class="hover:scale-110 transition duration-300 ease-in-out" alt="Louvre" />
+            <img v-if="movie.poster_path" :src='$store.state.thumbRootURL + movie.poster_path' class="hover:scale-110 transition duration-300 ease-in-out" :alt="movie.title" />
+            <img v-else src='@/assets/no-img.jpg' class="h-full hover:scale-110 transition duration-300 ease-in-out" :alt="movie.title" />
           </div>
           <div class="p-2">
             <h5 class="text-gray-900 text-xl font-medium mb-2 truncate">{{ movie.title }}</h5>
@@ -117,6 +118,7 @@ export default {
   data() {
     return {
       movies: [],
+      keyword: '',
     }
   },
   async mounted() {
@@ -129,6 +131,11 @@ export default {
     },
     formatData(date) {
       return moment(date).format("MMMM YYYY");
+    },
+    async searchMovies() {
+      if(this.keyword === '') return this.loadMovies();
+      await this.$store.dispatch("searchMovies", {keyword: this.keyword});
+      this.movies = this.$store.state.movies; 
     }
   }
 }
