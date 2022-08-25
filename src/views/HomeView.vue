@@ -8,7 +8,7 @@
         <div class="px-4 py-1.5 bg-green-500 text-white font-medium text-xs leading-tight rounded-tl rounded-bl flex items-center">
           <i class='bx bx-search text-2xl' ></i>
         </div>
-        <input @keyup="searchMovies" v-model="keyword" type="search" class="form-control relative flex-auto min-w-0 block w-full px-3 py-1.5 text-base font-normal text-gray-700 bg-white border border-solid border-gray-300 rounded-tr rounded-br transition ease-in-out m-0 focus:text-gray-700 focus:bg-white focus:border-green-600 focus:outline-none" placeholder="Search" aria-label="Search" aria-describedby="button-addon2">
+        <input autocomplete='on' @keyup="searchMovies" v-model="keyword" type="text" class="form-control relative flex-auto min-w-0 block w-full px-3 py-1.5 text-base font-normal text-gray-700 bg-white border border-solid border-gray-300 rounded-tr rounded-br transition ease-in-out m-0 focus:text-gray-700 focus:bg-white focus:border-green-600 focus:outline-none" placeholder="Search" aria-label="Search" aria-describedby="button-addon2">
       </div>
       <!-- Filter -->
       <div class="w-1/4 flex justify-around">
@@ -31,11 +31,7 @@
             m-0
             focus:text-gray-700 focus:bg-white focus:border-green-600 focus:outline-none" aria-label="Disabled select example" aria-placeholder="Open this select menu">
               <option selected>All</option>
-              <option value="1">Action</option>
-              <option value="2">Horror</option>
-              <option value="3">Drama</option>
-              <option value="4">Fantasy</option>
-              <option value="5">Fiction</option>
+              <option v-for="genre in $store.state.genres" :key="genre.id">{{genre.name}}</option>
           </select>
         </div>
         <div>
@@ -65,41 +61,30 @@
         </div>
       </div>
     </div>
-    <div class="w-full py-5 px-32">
+    <div class="w-full py-5 lg:px-72">
       <!-- Card Container -->
       <div class="flex flex-wrap justify-center gap-8">
         <!-- Individual Card -->
-        <div class=" overflow-hidden w-56 h-auto" v-for="movie in movies" :key="movie">
-          <!-- Image -->
-          <div class="relative overflow-hidden bg-no-repeat bg-cover rounded-lg">
-            <img v-if="movie.poster_path" :src='$store.state.thumbRootURL + movie.poster_path' class="hover:scale-110 transition duration-300 ease-in-out" :alt="movie.title" />
-            <img v-else src='@/assets/no-img.jpg' class="h-full hover:scale-110 transition duration-300 ease-in-out" :alt="movie.title" />
-          </div>
-          <div class="p-2">
-            <h5 class="text-gray-900 text-xl font-medium mb-2 truncate">{{ movie.title }}</h5>
-            <p class="text-gray-700 text-base mb-4">{{ formatData(movie.release_date) }}</p>
-          </div>
-        </div>
+        <movie-card :movies='movies'></movie-card>
       </div>
-
       <!-- Pagination -->
       <div class="w-full p-6">
         <div class="flex justify-center">
           <nav aria-label="Page navigation example">
             <ul class="flex list-style-none">
-              <li class="page-item disabled"><a
+              <li v-if="currentPage > 1" class="page-item" @click="previousPage"><a
+                  class="page-link relative block py-1.5 px-3 border-0 bg-transparent outline-none transition-all duration-300 rounded text-gray-800 hover:text-gray-800 hover:bg-gray-200 focus:shadow-none"
+                  href="#" aria-disabled="true">Previous</a></li>
+              <li v-else class="page-item disabled"><a
                   class="page-link relative block py-1.5 px-3 border-0 bg-transparent outline-none transition-all duration-300 rounded text-gray-500 pointer-events-none focus:shadow-none"
                   href="#" tabindex="-1" aria-disabled="true">Previous</a></li>
-              <li class="page-item"><a
-                  class="page-link relative block py-1.5 px-3 border-0 bg-transparent outline-none transition-all duration-300 rounded text-gray-800 hover:text-gray-800 hover:bg-gray-200 focus:shadow-none"
-                  href="#">1</a></li>
-              <li class="page-item active"><a
-                  class="page-link relative block py-1.5 px-3 border-0 bg-green-600 outline-none transition-all duration-300 rounded text-white hover:text-white hover:bg-green-600 shadow-md focus:shadow-md"
-                  href="#">2</a></li>
-              <li class="page-item"><a
-                  class="page-link relative block py-1.5 px-3 border-0 bg-transparent outline-none transition-all duration-300 rounded text-gray-800 hover:text-gray-800 hover:bg-gray-200 focus:shadow-none"
-                  href="#">3</a></li>
-              <li class="page-item"><a
+              <li class="page-item active"><input
+                  class="page-link appearance-none relative block w-10 text-center py-1.5 border-0 bg-green-600 outline-none transition-all duration-300 rounded text-white hover:text-white hover:bg-green-600 shadow-md focus:shadow-md"
+                  type="number" v-model="currentPage" @change="loadMovies(currentPage)"/></li>  
+              <li v-if="currentPage >= totalPage" class="page-item disabled"><a
+                  class="page-link relative block py-1.5 px-3 border-0 bg-transparent outline-none transition-all duration-300 rounded text-gray-500 pointer-events-none focus:shadow-none"
+                  href="#" tabindex="-1" aria-disabled="true">Next</a></li>
+              <li v-else class="page-item" @click="nextPage"><a
                   class="page-link relative block py-1.5 px-3 border-0 bg-transparent outline-none transition-all duration-300 rounded text-gray-800 hover:text-gray-800 hover:bg-gray-200 focus:shadow-none"
                   href="#">Next</a></li>
             </ul>
@@ -111,32 +96,76 @@
 </template>
 
 <script>
-import moment from 'moment';
+import MovieCard from '@/components/MovieCard.vue';
 
 export default {
   name: 'HomeView',
+  components: {
+    MovieCard,
+  },
   data() {
     return {
       movies: [],
+      currentPage: 1,
+      totalPage: 0,
       keyword: '',
     }
   },
   async mounted() {
-    this.loadMovies()
+    await this.$store.dispatch("getGenres");
+    await this.loadMovies(this.$route.query.page)
+  },
+  watch: {
+    '$route.query'(newQuery) {
+      if(this.$route.name == 'home') {
+        this.loadMovies(newQuery.page);
+      }
+      if(this.$route.name == 'search') {
+        this.searchMovies(newQuery.page);
+      }
+    }
   },
   methods: {
     async loadMovies(page) {
       await this.$store.dispatch("getMovies", page);
       this.movies = this.$store.state.movies;
+      this.currentPage = this.movies.page;
+      this.totalPage = this.movies.total_pages;
     },
-    formatData(date) {
-      return moment(date).format("MMMM YYYY");
+
+    async searchMovies(page) {
+      if(this.keyword === '') {
+        this.$router.replace('/');
+        this.loadMovies();
+        return;
+      }
+      this.$router.replace({path: '/search', query: {keyword: this.keyword, page: this.$route.query.page}})
+      await this.$store.dispatch("searchMovies", {keyword: this.keyword, page: page});
+      this.movies = this.$store.state.movies;
+      this.currentPage = this.movies.page;
+      this.totalPage = this.movies.total_pages;
     },
-    async searchMovies() {
-      if(this.keyword === '') return this.loadMovies();
-      await this.$store.dispatch("searchMovies", {keyword: this.keyword});
-      this.movies = this.$store.state.movies; 
-    }
+
+    previousPage() {
+      this.$router.replace({query: { keyword: this.keyword, page: (this.currentPage - 1) }})
+    },
+
+    nextPage() {
+      this.$router.replace({query: { keyword: this.keyword, page: (this.currentPage + 1) }})
+    },
   }
 }
 </script>
+
+<style scoped>
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Firefox */
+input[type=number] {
+  -moz-appearance: textfield;
+}
+</style>

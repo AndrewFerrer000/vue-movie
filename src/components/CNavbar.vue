@@ -14,40 +14,32 @@
         >
           <ul class="navbar-nav mr-auto lg:flex lg:flex-row">
             <li class="nav-item">
-              <a
+              <router-link :to="{name: 'home'}"
                 class="nav-link block pr-2 lg:px-2 py-2 text-gray-600 hover:text-gray-700 focus:text-gray-700 transition duration-150 ease-in-out"
-                href="#!"
                 data-mdb-ripple="true"
                 data-mdb-ripple-color="light"
-                >Home</a
-              >
+                >Home</router-link>
             </li>
             <li class="nav-item">
-              <a
+              <router-link :to="{name: 'about'}"
                 class="nav-link block pr-2 lg:px-2 py-2 text-gray-600 hover:text-gray-700 focus:text-gray-700 transition duration-150 ease-in-out"
-                href="#!"
                 data-mdb-ripple="true"
                 data-mdb-ripple-color="light"
-                >Features</a
-              >
+                >My list</router-link>
             </li>
             <li class="nav-item">
-              <a
+              <router-link :to="{name: 'about'}"
                 class="nav-link block pr-2 lg:px-2 py-2 text-gray-600 hover:text-gray-700 focus:text-gray-700 transition duration-150 ease-in-out"
-                href="#!"
                 data-mdb-ripple="true"
                 data-mdb-ripple-color="light"
-                >Pricing</a
-              >
+                >Pricing</router-link>
             </li>
             <li class="nav-item mb-2 lg:mb-0">
-              <a
+              <router-link :to="{name: 'about'}"
                 class="nav-link block pr-2 lg:px-2 py-2 text-gray-600 hover:text-gray-700 focus:text-gray-700 transition duration-150 ease-in-out"
-                href="#!"
                 data-mdb-ripple="true"
                 data-mdb-ripple-color="light"
-                >About</a
-              >
+                >About</router-link>
             </li>
           </ul>
         </div>
@@ -60,4 +52,8 @@
 export default {};
 </script>
 
-<style></style>
+<style lang="postcss" scoped>
+.router-link-active {
+  @apply text-green-500 font-semibold
+}
+</style>

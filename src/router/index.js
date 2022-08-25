@@ -5,7 +5,14 @@ const routes = [
   {
     path: '/',
     name: 'home',
-    component: HomeView
+    component: HomeView,
+    children: [
+      {
+        path: '/search',
+        name: 'search',
+        component: HomeView,
+      }
+    ],
   },
   {
     path: '/about',
