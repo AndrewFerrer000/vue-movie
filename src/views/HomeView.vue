@@ -65,7 +65,7 @@
       <!-- Card Container -->
       <div class="flex flex-wrap justify-center gap-8">
         <!-- Individual Card -->
-        <movie-card :movies='movies'></movie-card>
+        <movie-card :movies='movies' :genres="$store.state.genres"></movie-card>
       </div>
       <!-- Pagination -->
       <div class="w-full p-6">
@@ -105,6 +105,7 @@ export default {
   },
   data() {
     return {
+      isLoading: true,
       movies: [],
       currentPage: 1,
       totalPage: 0,

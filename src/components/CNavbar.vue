@@ -3,10 +3,10 @@
     <nav
       class="shadow-md p-6 bg-white relative flex items-center w-full justify-between"
     >
-      <div class="flex items-center">
+      <router-link :to="{name: 'home'}" class="flex items-center">
         <i class='bx bx-camera-movie mr-1 text-5xl'></i>
         <h1 class="text-3xl font-bold capitalize"><span class="text-green-500">Vue</span> Movie</h1>
-      </div>
+      </router-link>
       <div class="px-6 flex flex-wrap items-center justify-between">
         <div
           class="navbar-collapse collapse grow items-center"
