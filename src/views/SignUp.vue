@@ -9,7 +9,7 @@
         <h1
           class="text-xl font-bold leading-tight tracking-tight text-green-500 md:text-2xl"
         >
-          Sign in to your account
+          Create your account...
         </h1>
         <form class="space-y-4 md:space-y-6" @submit.prevent="signInUser">
           <div>
@@ -25,6 +25,7 @@
               v-model="email"
               class="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5"
               placeholder="name@email.com"
+              required
             />
           </div>
           <div>
@@ -40,6 +41,7 @@
               v-model="password"
               placeholder="••••••••"
               class="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg block w-full p-2.5"
+              required
             />
           </div>
           <p v-if="errorMsg" class="text-red-500 text-center">{{ errorMsg }}</p>
@@ -47,14 +49,14 @@
             type="submit"
             class="w-full text-white bg-green-500 hover:bg-green-700 focus:outline-none font-medium rounded-lg text-sm px-5 py-2.5 transition-colors duration-200 ease-in-out"
           >
-            Sign in
+            Create account
           </button>
           <p class="text-sm font-light text-gray-500">
-            Don’t have an account yet?
+            Already have an account?
             <router-link
-              :to="{ name: 'sign-up' }"
+              :to="{ name: 'sign-in' }"
               class="font-medium text-primary-600 hover:underline"
-              >Sign up</router-link
+              >Sign in</router-link
             >
           </p>
         </form>
@@ -75,7 +77,7 @@ export default {
   methods: {
     async signInUser() {
       try {
-        await this.$store.dispatch("signinUser", {
+        await this.$store.dispatch("signupUser", {
           email: this.email,
           password: this.password,
         });

@@ -5,8 +5,8 @@
       The page you are looking doesn't exist.
       <a
         class="ml-5 underline cursor-pointer text-green-500"
-        @click="$router.go(-1)"
-        >Go back.</a
+        @click="$router.push('/')"
+        >Go to homepage.</a
       >
     </p>
   </div>

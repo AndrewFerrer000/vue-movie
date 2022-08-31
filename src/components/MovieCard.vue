@@ -1,6 +1,6 @@
 <template>
   <div
-    class="flex flex-col justify-between overflow-hidden w-56 h-90"
+    class="flex flex-col justify-between overflow-hidden w-44 lg:w-56 h-90"
     v-for="movie in movies.results"
     :key="movie"
   >
@@ -26,7 +26,7 @@
         class="genre-list pointer-events-none w-full px-8 opacity-0 absolute top-5 left-1/2 -translate-x-1/2 h-8"
       >
         <p
-          class="text-white text-2xl text-center mb-2"
+          class="text-white text-xl lg:text-2xl text-center mb-2"
           :class="{ hidden: index >= 3 }"
           v-for="(genreId, index) in movie.genre_ids"
           :key="genreId"
@@ -36,27 +36,27 @@
       </div>
       <!-- Actions -->
       <div
-        class="action pointer-events-none border-green-500 bg-green-500 bg-opacity-70 top-52 -right-10 transition-right"
+        class="action pointer-events-none border-green-500 bg-green-500 bg-opacity-70 top-40 lg:top-52 -right-10 transition-right"
       >
         <i class="bx bxs-star text-yellow-500"></i
-        ><span class="font-semibold text-md text-white"
+        ><span class="font-semibold text-sm lg:text-base text-white"
           >{{ movie.vote_average }} / 10</span
         >
       </div>
       <div
-        class="action pointer-events-none border-blue-500 bg-blue-500 bg-opacity-70 top-64 -right-10 transition-right delay-100"
+        class="action pointer-events-none border-blue-500 bg-blue-500 bg-opacity-70 top-52 lg:top-64 -right-10 transition-right delay-100"
       >
         <i class="bx bxs-upvote text-green-500"></i
-        ><span class="font-semibold text-md text-white">{{
+        ><span class="font-semibold text-sm lg:text-base text-white">{{
           movie.vote_count
         }}</span>
       </div>
     </router-link>
     <div class="p-2">
-      <h5 class="text-gray-900 text-xl font-medium mb-2 truncate">
+      <h5 class="text-gray-900 text-lg lg:text-xl font-medium mb-2 truncate">
         {{ movie.title }}
       </h5>
-      <p class="text-gray-700 text-base mb-4">
+      <p class="text-gray-700 text-sm lg:text-base mb-4">
         {{ formatDate(movie.release_date) }}
       </p>
     </div>

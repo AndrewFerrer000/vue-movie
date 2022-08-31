@@ -2,14 +2,14 @@
   <div v-if="!isLoading" class="home">
     <!--Search and Filter -->
     <div class="w-full flex flex-col gap-y-4 items-center justify-center h-72">
-      <h1 class="text-2xl mb-5">
+      <h1 class="text-2xl mb-5 text-center px-5">
         Browse your favorites movie here in
         <span class="font-semibold"
           ><span class="text-green-500">Vue</span> Movie</span
         >
       </h1>
       <!-- Search -->
-      <div class="w-1/4 relative flex mb-4">
+      <div class="w-72 md:w-96 relative flex mb-4">
         <div
           class="px-4 py-1.5 bg-green-500 text-white font-medium text-xs leading-tight rounded-tl rounded-bl flex items-center"
         >
@@ -26,6 +26,7 @@
           aria-describedby="button-addon2"
         />
       </div>
+      <p v-if="searchErrorMsg" class="text-2xl">{{ searchErrorMsg }}</p>
       <!-- Filter -->
       <!-- <div class="w-1/4 flex justify-around">
         <div>
@@ -57,14 +58,14 @@
         </div>
       </div> -->
     </div>
-    <div class="w-full py-5 lg:px-72">
+    <div class="w-full py-5 lg:px-1">
       <!-- Card Container -->
-      <div class="flex flex-wrap justify-center gap-8">
+      <div class="flex flex-wrap justify-center gap-8 lg:gap-4">
         <!-- Individual Card -->
         <movie-card :movies="movies" :genres="$store.state.genres"></movie-card>
       </div>
       <!-- Pagination -->
-      <div class="w-full p-6">
+      <div v-if="!searchErrorMsg" class="w-full p-6">
         <div class="flex justify-center">
           <nav aria-label="Page navigation example">
             <ul class="flex list-style-none">
@@ -119,6 +120,7 @@
       </div>
     </div>
   </div>
+
   <div v-else-if="isLoading" class="w-full h-full text-center pt-20">
     <div class="flex items-center justify-center gap-5">
       <i
@@ -127,6 +129,7 @@
       <p class="tracking-widest text-3xl">Loading...</p>
     </div>
   </div>
+
   <div v-else class="w-full h-full text-center pt-20">
     <h1 class="text-3xl">
       {{ errorMsg }}
@@ -151,6 +154,7 @@ export default {
     return {
       isLoading: true,
       errorMsg: null,
+      searchErrorMsg: null,
       movies: [],
       currentPage: 1,
       totalPage: 0,
@@ -182,6 +186,10 @@ export default {
         this.currentPage = this.movies.page;
         this.totalPage = this.movies.total_pages;
         this.isLoading = false;
+
+        if (this.totalPage != 0) {
+          this.searchErrorMsg = null;
+        }
       }
     },
 
@@ -191,17 +199,27 @@ export default {
         this.loadMovies();
         return;
       }
-      this.$router.replace({
-        path: "/search",
-        query: { keyword: this.keyword, page: this.$route.query.page },
-      });
-      await this.$store.dispatch("searchMovies", {
-        keyword: this.keyword,
-        page: page,
-      });
-      this.movies = this.$store.state.movies;
-      this.currentPage = this.movies.page;
-      this.totalPage = this.movies.total_pages;
+
+      try {
+        this.$router.replace({
+          path: "/search",
+          query: { keyword: this.keyword, page: this.$route.query.page },
+        });
+        await this.$store.dispatch("searchMovies", {
+          keyword: this.keyword,
+          page: page,
+        });
+      } catch (error) {
+        this.searchErrorMsg = error.message;
+      } finally {
+        this.movies = this.$store.state.movies;
+        this.currentPage = this.movies.page;
+        this.totalPage = this.movies.total_pages;
+      }
+
+      if (this.totalPage != 0) {
+        this.searchErrorMsg = null;
+      }
     },
 
     previousPage() {
