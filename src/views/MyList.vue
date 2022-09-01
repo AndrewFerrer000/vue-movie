@@ -20,7 +20,11 @@
       <!-- Card Container -->
       <div class="flex flex-wrap justify-evenly gap-8">
         <!-- Individual Card -->
-        <movie-card :movies="movies" :genres="$store.state.genres"></movie-card>
+        <movie-card
+          :movie="movie"
+          v-for="(movie, index) in movies.results"
+          :key="index"
+        ></movie-card>
       </div>
     </div>
   </div>

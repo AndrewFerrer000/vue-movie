@@ -20,9 +20,7 @@
     <!-- Background -->
     <div
       class="relative bg-cover bg-center bg-no-repeat w-full h-screen overflow-hidden"
-      :style="`background-image: url(${
-        $store.state.backdropRootUrl + movieDetails.backdrop_path
-      })`"
+      :style="`background-image: url(${backdrop + movieDetails.backdrop_path})`"
     >
       <div
         class="flex flex-col xl:flex-row absolute top-0 left-0 w-full h-full bg-[#2c3e50] bg-opacity-60"
@@ -140,13 +138,7 @@
             <img
               v-if="cast.profile_path"
               class="w-full h-full rounded-tl-lg rounded-bl-lg"
-              :src="$store.state.backdropRootUrl + cast.profile_path"
-              :alt="cast.name"
-            />
-            <img
-              v-else
-              class="w-full h-full rounded-tl-lg rounded-bl-lg"
-              src="@/assets/no-img.jpg"
+              :src="backdrop + cast.profile_path"
               :alt="cast.name"
             />
           </div>
@@ -182,22 +174,16 @@
       <div class="flex flex-wrap justify-center gap-8">
         <!-- Individual Card -->
         <movie-card
-          :movies="similarMovies"
-          :genres="$store.state.genres"
+          v-for="(similar, index) in similarMovies.results"
+          :key="index"
+          :movie="similar"
         ></movie-card>
       </div>
     </div>
   </div>
 
   <!-- Loader -->
-  <div v-else-if="isLoading" class="w-full h-full text-center pt-20">
-    <div class="flex items-center justify-center gap-5">
-      <i
-        class="bx bx-loader-alt text-5xl font-bold text-green-500 animate-spin"
-      ></i>
-      <p class="tracking-widest text-3xl">Loading...</p>
-    </div>
-  </div>
+  <c-loader v-else-if="isLoading"></c-loader>
 
   <!-- Error Message -->
   <div v-else class="w-full h-full text-center pt-20">
@@ -215,18 +201,19 @@
 <script>
 import moment from "moment";
 import MovieCard from "@/components/MovieCard.vue";
+import CLoader from "@/components/CLoader.vue";
+import { mapState } from "vuex";
 
 export default {
   components: {
     MovieCard,
+    CLoader,
   },
   data() {
     return {
       isLoading: true,
       isAdded: false,
       errorMsg: null,
-      movieDetails: [],
-      similarMovies: [],
       toggleCast: false,
       playTrailer: false,
     };
@@ -250,8 +237,6 @@ export default {
       } catch (error) {
         this.errorMsg = error.message;
       } finally {
-        this.movieDetails = this.$store.state.movieDetails.data;
-        this.similarMovies = this.$store.state.similarMovies;
         this.isLoading = false;
       }
       this.toggleAddRemoveBtn();
@@ -289,7 +274,12 @@ export default {
       });
     },
   },
-  computed: {
+
+  computed: mapState({
+    backdrop: (state) => state.rootURL.backdrop,
+    movieDetails: (state) => state.movieDetails.data,
+    similarMovies: (state) => state.similarMovies,
+
     twoDecimal() {
       return Math.round(this.movieDetails.vote_average * 100) / 100;
     },
@@ -298,7 +288,7 @@ export default {
         ({ type }) => type == "Trailer"
       );
     },
-  },
+  }),
 };
 </script>
 

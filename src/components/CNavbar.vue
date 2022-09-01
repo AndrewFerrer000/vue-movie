@@ -10,10 +10,7 @@
         </h1>
       </a>
       <div class="px-6 flex flex-wrap items-center justify-between">
-        <div
-          class="navbar-collapse collapse grow items-center"
-          id="navbarSupportedContentY"
-        >
+        <div class="navbar-collapse collapse grow items-center">
           <ul class="navbar-nav mr-auto flex">
             <li class="nav-item">
               <router-link

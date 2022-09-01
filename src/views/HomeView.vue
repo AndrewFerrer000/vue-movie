@@ -62,7 +62,11 @@
       <!-- Card Container -->
       <div class="flex flex-wrap justify-center gap-8 lg:gap-4">
         <!-- Individual Card -->
-        <movie-card :movies="movies" :genres="$store.state.genres"></movie-card>
+        <movie-card
+          v-for="(movie, index) in movies.results"
+          :key="index"
+          :movie="movie"
+        ></movie-card>
       </div>
       <!-- Pagination -->
       <div v-if="!searchErrorMsg" class="w-full p-6">

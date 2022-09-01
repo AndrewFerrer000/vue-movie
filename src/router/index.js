@@ -1,60 +1,61 @@
-import { createRouter, createWebHistory } from 'vue-router'
-import HomeView from '../views/HomeView.vue'
-import ViewMovie from '../views/ViewMovie.vue'
-import MyList from '../views/MyList.vue'
-import NotFound from '../views/NotFound.vue'
+import { createRouter, createWebHistory } from "vue-router";
+import HomeView from "../views/HomeView.vue";
+import ViewMovie from "../views/ViewMovie.vue";
+import MyList from "../views/MyList.vue";
+import NotFound from "../views/NotFound.vue";
 
 const routes = [
   {
-    path: '/',
-    name: 'home',
+    path: "/",
+    name: "home",
     component: HomeView,
     children: [
       {
-        path: '/search',
-        name: 'search',
+        path: "/search",
+        name: "search",
         component: HomeView,
-      }
+      },
     ],
   },
   {
-    path: '/mylist',
-    name: 'my-list',
+    path: "/mylist",
+    name: "my-list",
     component: MyList,
   },
   {
-    path: '/view/:id',
-    name: 'view-movie',
+    path: "/view/:id",
+    name: "view-movie",
     component: ViewMovie,
   },
   {
-    path: '/signin',
-    name: 'sign-in',
+    path: "/signin",
+    name: "sign-in",
     meta: { restrictAuth: true },
-    component: () => import('../views/SignIn.vue')
+    component: () => import("../views/SignIn.vue"),
   },
   {
-    path: '/signup',
-    name: 'sign-up',
+    path: "/signup",
+    name: "sign-up",
     meta: { restrictAuth: true },
-    component: () => import('../views/SignUp.vue')
+    component: () => import("../views/SignUp.vue"),
   },
-  { 
-    path: '/:notfound(.*)',
+  {
+    path: "/:notfound(.*)",
     component: NotFound,
   },
-]
+];
 
 const router = createRouter({
   history: createWebHistory(process.env.BASE_URL),
-  routes
-})
+  routes,
+});
 
 // eslint-disable-next-line
 router.beforeEach((to, from, next) => {
-    let isAuth = localStorage.getItem("userdata");
-    if(to.matched.some(record => record.meta.restrictAuth) && isAuth != null) return next('/')
-    next()
+  let isAuth = localStorage.getItem("userdata");
+  if (to.matched.some((record) => record.meta.restrictAuth) && isAuth != null)
+    return next("/");
+  next();
 });
 
-export default router
+export default router;
