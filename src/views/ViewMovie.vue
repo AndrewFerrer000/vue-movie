@@ -234,6 +234,7 @@ export default {
   watch: {
     "$route.params.id": function () {
       this.loadMovies();
+      this.isAdded = false;
     },
   },
   async mounted() {
@@ -242,8 +243,10 @@ export default {
   methods: {
     async loadMovies() {
       try {
-        await this.$store.dispatch("getMovieDetails", this.$route.params.id);
-        await this.$store.dispatch("getSimilarMovies", this.$route.params.id);
+        if (this.$route.params.id) {
+          await this.$store.dispatch("getMovieDetails", this.$route.params.id);
+          await this.$store.dispatch("getSimilarMovies", this.$route.params.id);
+        }
       } catch (error) {
         this.errorMsg = error.message;
       } finally {
@@ -277,7 +280,7 @@ export default {
       // update list in vuex every add and remove
       await this.$store.dispatch("getMovieList");
       // toggle buttons depend on statement
-      const list = await JSON.parse(localStorage.getItem("mylist"));
+      const list = (await JSON.parse(localStorage.getItem("mylist"))) || [];
 
       list.forEach((id) => {
         if (id == this.movieDetails.id) {

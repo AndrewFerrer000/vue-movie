@@ -29,10 +29,10 @@
                 >My list</router-link
               >
             </li>
-            <li class="nav-item" v-if="!this.$store.state.user.data">
+            <li class="nav-item" v-if="!isAuth">
               <router-link
                 :to="{ name: 'sign-in' }"
-                class="block pr-2 lg:px-4 py-2 bg-green-500 text-white hover:bg-green-800 rounded-lg transition duration-150 ease-in-out"
+                class="block ml-4 p-2 lg:px-4 py-2 bg-green-500 text-white hover:bg-green-800 rounded-lg transition duration-150 ease-in-out"
                 >Sign in</router-link
               >
             </li>
@@ -53,10 +53,19 @@
 
 <script>
 export default {
+  data() {
+    return {
+      isAuth: false,
+    };
+  },
+  watch: {
+    "$store.state.isAuthenticated": function (newData) {
+      this.isAuth = newData;
+    },
+  },
   methods: {
     logoutUser() {
-      localStorage.removeItem("userdata");
-      this.$router.push({ name: "sign-in" });
+      this.$store.commit("CLEAR_USER");
     },
   },
 };
