@@ -12,7 +12,7 @@ export default createStore({
     firebase: {
       apiKey: 'AIzaSyAn-80I0mdEvvt8oXdxMa2KqK_WyIrUAVg',
       endpoint: 'https://firebase.googleapis.com/',
-      database_endpoint: 'https://vue-movie-2e749-default-rtdb.firebaseio.com/'
+      database_endpoint: 'https://vue-movie-2e749-default-rtdb.firebaseio.com'
     },
     apiKey: 'b43b1dbab4ea9fb0ea4acb0101b1d758',
     thumbRootURL: 'http://image.tmdb.org/t/p/w500/',
@@ -46,6 +46,7 @@ export default createStore({
     },
     CLEAR_USER(state) {
       state.isAuthenticated = false;
+      localStorage.removeItem("userdata");
       return state.user.data = null;
     }
   },
@@ -100,18 +101,26 @@ export default createStore({
           }
         });
 
-        await axios({
-          method: 'post',
-          headers: {},
-          url: `https://identitytoolkit.googleapis.com/v1/accounts:lookup?key=${context.state.firebase.apiKey}`,
-          data: {
-            idToken: response.data.idToken,
-          },
-        });
-
-        // save to firebase database
-
-
+        if (response.status === 200) {
+          const getUserData = await axios({
+            method: 'post',
+            headers: {},
+            url: `https://identitytoolkit.googleapis.com/v1/accounts:lookup?key=${context.state.firebase.apiKey}`,
+            data: {
+              idToken: response.data.idToken,
+            },
+          });
+  
+          // save to firebase database
+          axios({
+            method: 'PUT',
+            url: `${context.state.firebase.database_endpoint}/users/${getUserData.data.users[0].localId}.json`,
+            data: JSON.stringify(getUserData.data.users[0]),
+          })
+          
+          localStorage.setItem("userdata", JSON.stringify(response.data));
+          context.commit("SET_USERDATA", JSON.parse(localStorage.getItem("userdata")));
+        }
       } catch (error) {
         switch (error.response.data.error.message) {
           case 'EMAIL_EXISTS':
@@ -139,9 +148,8 @@ export default createStore({
             password: password,
           }
         });
-
-        localStorage.setItem("userdata", JSON.stringify(response.data));
         router.push('/');
+        localStorage.setItem("userdata", JSON.stringify(response.data));
         context.commit("SET_USERDATA", JSON.parse(localStorage.getItem("userdata")));
       } catch (error) {
         switch (error.response.data.error.message) {
