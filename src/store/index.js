@@ -4,13 +4,15 @@ import router from '@/router'
 
 export default createStore({
   state: {
+    isAuthenticated: false,
     user: {
       movieList: [],
-      data: [],
+      data: null,
     },
     firebase: {
       apiKey: 'AIzaSyAn-80I0mdEvvt8oXdxMa2KqK_WyIrUAVg',
       endpoint: 'https://firebase.googleapis.com/',
+      database_endpoint: 'https://vue-movie-2e749-default-rtdb.firebaseio.com/'
     },
     apiKey: 'b43b1dbab4ea9fb0ea4acb0101b1d758',
     thumbRootURL: 'http://image.tmdb.org/t/p/w500/',
@@ -38,8 +40,13 @@ export default createStore({
       return state.similarMovies = payload;
     },
     SET_USERDATA(state, payload) {
-      console.log(payload)
+      state.isAuthenticated = true;
+      localStorage.setItem("userdata", JSON.stringify(payload));
       return state.user.data = payload
+    },
+    CLEAR_USER(state) {
+      state.isAuthenticated = false;
+      return state.user.data = null;
     }
   },
   actions: {
@@ -72,7 +79,7 @@ export default createStore({
       context.commit("SET_SIMILARMOVIES", response.data);
     },
     async getMovieList(context) {
-      const localList = JSON.parse(localStorage.getItem("mylist"));
+      const localList = JSON.parse(localStorage.getItem("mylist")) || [];
       const newList = [];
       for (const id of localList) {
         const response = await axios.get(`https://api.themoviedb.org/3/movie/${id}?api_key=${context.state.apiKey}`);
@@ -82,7 +89,7 @@ export default createStore({
     },
     async signupUser (context, {email, password}) {
       try {
-        await axios({
+        const response = await axios({
           method: 'post',
           url: `https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=${context.state.firebase.apiKey}`,
           headers: {}, 
@@ -92,16 +99,32 @@ export default createStore({
             returnSecureToken: true,
           }
         });
+
+        await axios({
+          method: 'post',
+          headers: {},
+          url: `https://identitytoolkit.googleapis.com/v1/accounts:lookup?key=${context.state.firebase.apiKey}`,
+          data: {
+            idToken: response.data.idToken,
+          },
+        });
+
+        // save to firebase database
+
+
       } catch (error) {
         switch (error.response.data.error.message) {
           case 'EMAIL_EXISTS':
             throw new Error('This email is already exist, try another email.')
+
+          case 'WEAK_PASSWORD':
+            throw new Error('Password should be at least 6 characters.')
         
           case 'TOO_MANY_ATTEMPTS_TRY_LATER':
             throw new Error('Too many attempt, this account is temporarily disabled you can try again later.')
 
           default:
-            throw new Error('Something went wrong, please try again later or contact admin.')
+            throw new Error(error.response.data.error.message)
         }
       }
     },
@@ -141,7 +164,7 @@ export default createStore({
             throw new Error('Something went wrong, please try again later or contact admin.')
         }
       }
-    }
+    },
   },
   modules: {
   }

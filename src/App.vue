@@ -13,6 +13,9 @@ export default {
   },
   async mounted() {
     await this.$store.dispatch("getGenres");
+
+    let signInUser = JSON.parse(localStorage.getItem("userdata"));
+    if (signInUser) await this.$store.commit("SET_USERDATA", signInUser);
   },
 };
 </script>

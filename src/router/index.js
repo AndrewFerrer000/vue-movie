@@ -30,22 +30,31 @@ const routes = [
   {
     path: '/signin',
     name: 'sign-in',
+    meta: { restrictAuth: true },
     component: () => import('../views/SignIn.vue')
   },
   {
     path: '/signup',
     name: 'sign-up',
+    meta: { restrictAuth: true },
     component: () => import('../views/SignUp.vue')
   },
   { 
     path: '/:notfound(.*)',
     component: NotFound,
-  }
+  },
 ]
 
 const router = createRouter({
   history: createWebHistory(process.env.BASE_URL),
   routes
 })
+
+// eslint-disable-next-line
+router.beforeEach((to, from, next) => {
+    let isAuth = localStorage.getItem("userdata");
+    if(to.matched.some(record => record.meta.restrictAuth) && isAuth != null) return next('/')
+    next()
+});
 
 export default router
