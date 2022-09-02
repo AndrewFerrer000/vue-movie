@@ -231,12 +231,13 @@ export default {
         this.toggleAddRemoveBtn();
       }
     },
-    removeList(id) {
+    async removeList(id) {
       this.isAdded = false;
       const mylist = JSON.parse(localStorage.getItem("mylist")) || [];
       if (mylist) {
         const newList = mylist.filter((movieId) => movieId !== id);
         localStorage.setItem("mylist", JSON.stringify(newList));
+
         this.toggleAddRemoveBtn();
       }
     },

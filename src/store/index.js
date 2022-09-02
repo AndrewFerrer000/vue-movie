@@ -62,7 +62,9 @@ export default createStore({
     CLEAR_USER(state) {
       state.isAuthenticated = false;
       localStorage.removeItem("userdata");
+      localStorage.removeItem("mylist");
       state.user.data = null;
+      state.user.movieList = null;
     },
   },
   actions: {
@@ -158,25 +160,37 @@ export default createStore({
     },
 
     async signinUser({ commit }, { email, password }) {
-      try {
-        const { data } = await axios({
-          method: "post",
-          url: `https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=${FIREBASE_API_KEY}`,
-          headers: {},
-          data: {
-            email: email,
-            password: password,
-          },
+      const response = await axios({
+        method: "post",
+        url: `https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=${FIREBASE_API_KEY}`,
+        headers: {},
+        data: {
+          email: email,
+          password: password,
+        },
+      });
+
+      if (response.status === 200) {
+        localStorage.setItem("userdata", JSON.stringify(response.data));
+        commit("SET_USERDATA", JSON.parse(localStorage.getItem("userdata")));
+
+        // get mylist both from db and localstorage
+        const localMyList = JSON.parse(localStorage.getItem("mylist"));
+        const dbMyList = await axios({
+          method: "GET",
+          url: `${FIREBASE_DATABASE_ENDPOINT}/user-movie-list/${response.data.localId}.json`,
         });
 
+        const mergeList = [...(localMyList || []), ...(dbMyList.data || [])];
+
+        const dbList = await axios({
+          method: "PUT",
+          url: `${FIREBASE_DATABASE_ENDPOINT}/user-movie-list/${response.data.localId}.json`,
+          data: mergeList,
+        });
+
+        localStorage.setItem("mylist", JSON.stringify(dbList.data));
         router.push("/");
-        localStorage.setItem("userdata", JSON.stringify(data));
-        commit("SET_USERDATA", JSON.parse(localStorage.getItem("userdata")));
-      } catch (error) {
-        throw new Error(
-          FIREBASE_AUTH_ERROR_CODE[error.response.data.error.message] ||
-            "Something went wrong, please try again later or contact admin."
-        );
       }
     },
   },
