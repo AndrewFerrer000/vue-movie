@@ -2,30 +2,30 @@
   <teleport to="body">
     <div class="pointer-events-none absolute top-0 left-0 w-full h-screen z-0">
       <div
+        :class="containerClass"
         class="pointer-events-auto absolute bottom-10 right-20 w-96 flex items-center justify-between p-4 border-2 shadow-lg rounded-lg"
-        :class="container"
       >
         <i
           class="bx font-bold text-3xl"
           :class="[
-            iconColor,
+            iconColorClass,
             {
-              'bx-info-circle': type === 'info',
-              'bx-check': type === 'success',
-              'bxs-radiation': type === 'danger',
-              'bx-traffic-cone': type === 'warning',
+              'bx-info-circle': alertType === 'info',
+              'bx-check': alertType === 'success',
+              'bxs-radiation': alertType === 'danger',
+              'bx-traffic-cone': alertType === 'warning',
             },
           ]"
-        ></i>
-        <div class="mx-3 text-sm font-medium" :class="textColor">
+        />
+        <div class="mx-3 text-sm font-medium" :class="textColorClass">
           {{ message }}
         </div>
         <button
           type="button"
           class="rounded-lg focus:ring-2 py-0.5 px-2"
-          :class="closeBtn"
+          :class="closeBtnClass"
         >
-          <i class="bx bx-x text-2xl grid place-items-center"></i>
+          <i class="bx bx-x text-2xl grid place-items-center" />
         </button>
       </div>
     </div>
@@ -35,7 +35,7 @@
 <script>
 export default {
   props: {
-    type: {
+    alertType: {
       type: String,
       required: true,
     },
@@ -56,23 +56,25 @@ export default {
     };
   },
   computed: {
-    container() {
-      return `bg-${this.typeValue[this.type]}-100 border-${
-        this.typeValue[this.type]
-      }-700`;
+    containerClass() {
+      return [
+        `bg-${this.typeValue[this.alertType]}-100`,
+        `border-${this.typeValue[this.alertType]}-700`,
+      ];
     },
-    textColor() {
-      return `text-${this.typeValue[this.type]}-700`;
+    textColorClass() {
+      return [`text-${this.typeValue[this.alertType]}-700`];
     },
-    closeBtn() {
-      return `bg-${this.typeValue[this.type]}-100 text-${
-        this.typeValue[this.type]
-      }-500 focus:ring-${this.typeValue[this.type]}-400 hover:bg-${
-        this.typeValue[this.type]
-      }-200`;
+    closeBtnClass() {
+      return [
+        `bg-${this.typeValue[this.alertType]}-100`,
+        `text-${this.typeValue[this.alertType]}-500`,
+        `focus:ring-${this.typeValue[this.alertType]}-400`,
+        `hover:bg-${this.typeValue[this.alertType]}-200`,
+      ];
     },
-    iconColor() {
-      return `text-${this.typeValue[this.type]}-500`;
+    iconColorClass() {
+      return `text-${this.typeValue[this.alertType]}-500`;
     },
   },
 };

@@ -40,29 +40,29 @@ export default createStore({
   },
   mutations: {
     SET_MOVIE(state, payload) {
-      return (state.movies = payload);
+      state.movies = payload;
     },
     SET_MOVIE_DETAILS(state, payload) {
-      return (state.movieDetails = payload);
+      state.movieDetails = payload;
     },
     SET_GENRE(state, payload) {
-      return (state.genres = payload);
+      state.genres = payload;
     },
     SET_MOVIELIST({ user }, payload) {
-      return (user.movieList = payload);
+      user.movieList = payload;
     },
     SET_SIMILARMOVIES(state, payload) {
-      return (state.similarMovies = payload);
+      state.similarMovies = payload;
     },
     SET_USERDATA(state, payload) {
       state.isAuthenticated = true;
       localStorage.setItem("userdata", JSON.stringify(payload));
-      return (state.user.data = payload);
+      state.user.data = payload;
     },
     CLEAR_USER(state) {
       state.isAuthenticated = false;
       localStorage.removeItem("userdata");
-      return (state.user.data = null);
+      state.user.data = null;
     },
   },
   actions: {
@@ -96,7 +96,7 @@ export default createStore({
           `${MOVIE_API_ENDPOINT}/movie/${payload}?api_key=${MOVIE_API_KEY}&append_to_response=videos,credits,images`
         );
         commit("SET_MOVIE_DETAILS", getDetails);
-      } catch (error) {
+      } catch {
         throw new Error("Sorry! this movie does not exist.");
       }
     },

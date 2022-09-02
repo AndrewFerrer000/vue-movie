@@ -13,7 +13,7 @@
         <div
           class="px-4 py-1.5 bg-green-500 text-white font-medium text-xs leading-tight rounded-tl rounded-bl flex items-center"
         >
-          <i class="bx bx-search text-2xl"></i>
+          <i class="bx bx-search text-2xl" />
         </div>
         <input
           autocomplete="on"
@@ -62,11 +62,11 @@
       <!-- Card Container -->
       <div class="flex flex-wrap justify-center gap-8 lg:gap-4">
         <!-- Individual Card -->
-        <movie-card
+        <CMovieCard
           v-for="(movie, index) in movies.results"
           :key="index"
           :movie="movie"
-        ></movie-card>
+        />
       </div>
       <!-- Pagination -->
       <div v-if="!searchErrorMsg" class="w-full p-6">
@@ -129,7 +129,7 @@
     <div class="flex items-center justify-center gap-5">
       <i
         class="bx bx-loader-alt text-5xl font-bold text-green-500 animate-spin"
-      ></i>
+      />
       <p class="tracking-widest text-3xl">Loading...</p>
     </div>
   </div>
@@ -147,12 +147,12 @@
 </template>
 
 <script>
-import MovieCard from "@/components/MovieCard.vue";
+import CMovieCard from "@/components/CMovieCard.vue";
 
 export default {
   name: "HomeView",
   components: {
-    MovieCard,
+    CMovieCard,
   },
   data() {
     return {
