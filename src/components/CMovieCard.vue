@@ -1,9 +1,5 @@
 <template>
-  <div
-    class="flex flex-col justify-between overflow-hidden w-44 lg:w-56 h-90"
-    v-for="movie in movies.results"
-    :key="movie"
-  >
+  <div class="flex flex-col justify-between overflow-hidden w-44 lg:w-56 h-90">
     <!-- Image -->
     <router-link
       :to="{ name: 'view-movie', params: { id: movie.id } }"
@@ -11,7 +7,7 @@
     >
       <img
         v-if="movie.poster_path"
-        :src="$store.state.thumbRootURL + movie.poster_path"
+        :src="$store.state.rootURL.thumb + movie.poster_path"
         class="h-full object-cover hover:scale-110 hover:brightness-50 transition duration-300 ease-in-out"
         :alt="movie.title"
       />
@@ -31,7 +27,7 @@
           v-for="(genreId, index) in movie.genre_ids"
           :key="genreId"
         >
-          {{ genres.find(({ id }) => id === genreId).name }}
+          {{ getGenreNameById(genreId) }}
         </p>
       </div>
       <!-- Actions -->
@@ -67,10 +63,18 @@
 import moment from "moment";
 
 export default {
-  props: ["movies", "genres"],
+  props: ["movie"],
   methods: {
     formatDate(date) {
       return moment(date).format("MMMM YYYY");
+    },
+    getGenreNameById(genreId) {
+      return this.getGenreList.find(({ id }) => id === genreId).name;
+    },
+  },
+  computed: {
+    getGenreList() {
+      return this.$store.state.genres;
     },
   },
 };

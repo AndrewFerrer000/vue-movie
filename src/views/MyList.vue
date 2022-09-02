@@ -14,24 +14,28 @@
       your account
     </div>
     <h1 class="flex items-center gap-x-2 text-3xl font-semibold mt-5">
-      <span>My List </span><i class="bx bxs-heart text-red-500"></i>
+      <span>My List </span><i class="bx bxs-heart text-red-500" />
     </h1>
     <div class="w-full py-5">
       <!-- Card Container -->
       <div class="flex flex-wrap justify-evenly gap-8">
         <!-- Individual Card -->
-        <movie-card :movies="movies" :genres="$store.state.genres"></movie-card>
+        <CMovieCard
+          :movie="movie"
+          v-for="(movie, index) in movies.results"
+          :key="index"
+        />
       </div>
     </div>
   </div>
 </template>
 
 <script>
-import MovieCard from "@/components/MovieCard.vue";
+import CMovieCard from "@/components/CMovieCard.vue";
 
 export default {
   components: {
-    MovieCard,
+    CMovieCard,
   },
   data() {
     return {

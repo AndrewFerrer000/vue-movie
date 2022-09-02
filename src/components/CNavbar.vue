@@ -1,19 +1,16 @@
 <template>
   <header>
     <nav
-      class="shadow-md p-6 bg-white relative flex items-center w-full justify-between"
+      class="shadow-md p-6 relative flex items-center w-full justify-between"
     >
       <a href="/" class="flex items-center">
-        <i class="bx bx-camera-movie mr-1 text-2xl md:text-5xl"></i>
+        <i class="bx bx-camera-movie mr-1 text-2xl md:text-5xl" />
         <h1 class="text-lg md:text-3xl font-bold capitalize">
           <span class="text-green-500">Vue</span> Movie
         </h1>
       </a>
       <div class="px-6 flex flex-wrap items-center justify-between">
-        <div
-          class="navbar-collapse collapse grow items-center"
-          id="navbarSupportedContentY"
-        >
+        <div class="navbar-collapse collapse grow items-center">
           <ul class="navbar-nav mr-auto flex">
             <li class="nav-item">
               <router-link

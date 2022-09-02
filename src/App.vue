@@ -1,6 +1,6 @@
 <template>
   <div class="w-full h-screen">
-    <c-navbar></c-navbar>
+    <CNavbar />
     <router-view />
   </div>
 </template>
