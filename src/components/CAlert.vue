@@ -43,6 +43,10 @@ export default {
       type: String,
       required: true,
     },
+    duration: {
+      type: Number,
+      default: 1000,
+    },
   },
   data() {
     return {
@@ -54,6 +58,9 @@ export default {
         warning: "yellow",
       },
     };
+  },
+  mounted() {
+    console.log(this.duration);
   },
   computed: {
     containerClass() {

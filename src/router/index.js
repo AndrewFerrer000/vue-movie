@@ -52,8 +52,9 @@ const router = createRouter({
 
 // eslint-disable-next-line
 router.beforeEach((to, from, next) => {
-  let isAuth = localStorage.getItem("userdata");
-  if (to.matched.some((record) => record.meta.restrictAuth) && isAuth != null)
+  const isAuth = JSON.parse(localStorage.getItem("currentUser"));
+
+  if (to.matched.some((record) => record.meta.restrictAuth) && !!isAuth)
     return next("/");
   next();
 });

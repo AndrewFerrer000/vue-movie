@@ -11,7 +11,7 @@
         >
           Create your account...
         </h1>
-        <form class="space-y-4 md:space-y-6" @submit.prevent="signInUser">
+        <form class="space-y-4 md:space-y-6" @submit.prevent="signUpUser">
           <div>
             <label
               for="email"
@@ -19,7 +19,7 @@
               >Your email</label
             >
             <input
-              type="email"
+              type="text"
               name="email"
               v-model="email"
               class="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5"
@@ -64,6 +64,10 @@
 </template>
 
 <script>
+import { createUserWithEmailAndPassword } from "firebase/auth";
+import { db, auth } from "@/main";
+import { doc, setDoc, Timestamp } from "firebase/firestore";
+
 export default {
   data() {
     return {
@@ -73,19 +77,44 @@ export default {
     };
   },
   methods: {
-    async signInUser() {
-      try {
-        await this.$store.dispatch("signupUser", {
-          email: this.email,
-          password: this.password,
+    async signUpUser() {
+      createUserWithEmailAndPassword(auth, this.email, this.password)
+        .then(({ user }) => {
+          this.email = "";
+          this.password = "";
+
+          setDoc(doc(db, "users", user.uid), {
+            email: user.email,
+            id: user.uid,
+            createdAt: Timestamp.now(),
+          }).then(() => {
+            const localList = JSON.parse(localStorage.getItem("mylist"));
+
+            if (localList)
+              setDoc(doc(db, "user-movie-list", user.uid), {
+                list: localList,
+              });
+            this.$router.replace("/");
+          });
+        })
+        .catch((err) => {
+          this.password = "";
+          switch (err.code) {
+            case "auth/email-already-exists":
+            case "auth/email-already-in-use":
+              this.errorMsg =
+                "This email is already exist, please try another email.";
+              break;
+            case "auth/invalid-email":
+              this.errorMsg = "The email you provided is invalid";
+              break;
+            case "auth/weak-password":
+              this.errorMsg = "The password must be atleast six characters.";
+              break;
+            default:
+              this.errorMsg = "Something went wrong.";
+          }
         });
-        this.email = "";
-        this.password = "";
-        this.$router.push("/");
-      } catch (error) {
-        this.errorMsg = error.message;
-        this.password = "";
-      }
     },
   },
 };

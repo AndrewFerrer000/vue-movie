@@ -6,6 +6,8 @@
 </template>
 
 <script>
+import { onAuthStateChanged } from "firebase/auth";
+import { auth } from "@/main";
 import CNavbar from "@/components/CNavbar.vue";
 export default {
   components: {
@@ -14,8 +16,11 @@ export default {
   async mounted() {
     await this.$store.dispatch("getGenres");
 
-    let signInUser = JSON.parse(localStorage.getItem("userdata"));
-    if (signInUser) await this.$store.commit("SET_USERDATA", signInUser);
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        this.$store.commit("SET_USER", user);
+      } else this.$store.commit("CLEAR_USER");
+    });
   },
 };
 </script>

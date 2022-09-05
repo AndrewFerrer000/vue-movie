@@ -180,6 +180,7 @@ import CPreviewTrailer from "@/components/CPreviewTrailer.vue";
 import CCastCard from "@/components/CCastCard.vue";
 
 import { mapState } from "vuex";
+import { addData } from "@/firestore-contoller";
 
 export default {
   components: {
@@ -228,6 +229,10 @@ export default {
       if (mylist) {
         mylist.push(id);
         localStorage.setItem("mylist", JSON.stringify(mylist));
+
+        if (this.isAuth) {
+          addData(this.currentUserID);
+        }
         this.toggleAddRemoveBtn();
       }
     },
@@ -237,6 +242,10 @@ export default {
       if (mylist) {
         const newList = mylist.filter((movieId) => movieId !== id);
         localStorage.setItem("mylist", JSON.stringify(newList));
+
+        if (this.isAuth) {
+          addData(this.currentUserID);
+        }
         this.toggleAddRemoveBtn();
       }
     },
@@ -252,7 +261,6 @@ export default {
         }
       });
     },
-
     closeTrailer() {
       this.openTrailer = false;
     },
@@ -272,6 +280,8 @@ export default {
       backdrop: (state) => state.rootURL.backdrop,
       movieDetails: (state) => state.movieDetails.data,
       similarMovies: (state) => state.similarMovies,
+      currentUserID: (state) => state.user.data.uid,
+      isAuth: (state) => state.isAuthenticated,
     }),
   },
 };

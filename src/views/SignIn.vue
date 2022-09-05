@@ -19,7 +19,7 @@
               >Your email</label
             >
             <input
-              type="email"
+              type="text"
               name="email"
               id="email"
               v-model="email"
@@ -64,6 +64,9 @@
 </template>
 
 <script>
+import { signInWithEmailAndPassword } from "firebase/auth";
+import { auth } from "@/main";
+import { addData } from "@/firestore-contoller";
 export default {
   data() {
     return {
@@ -74,15 +77,27 @@ export default {
   },
   methods: {
     async signInUser() {
-      try {
-        await this.$store.dispatch("signinUser", {
-          email: this.email,
-          password: this.password,
+      signInWithEmailAndPassword(auth, this.email, this.password)
+        .then(({ user }) => {
+          addData(user.uid);
+          this.$store.commit("SET_USER", user);
+          this.$router.replace("/");
+        })
+        .catch((err) => {
+          this.password = "";
+          switch (err.code) {
+            case "auth/wrong-password":
+            case "auth/user-not-found":
+              this.errorMsg =
+                "Email or Password is incorrect, Please try again.";
+              break;
+            case "auth/invalid-email":
+              this.errorMsg = "The email you provided is invalid";
+              break;
+            default:
+              this.errorMsg = "Something went wrong.";
+          }
         });
-      } catch (error) {
-        this.errorMsg = error.message;
-        this.password = "";
-      }
     },
   },
 };

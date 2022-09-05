@@ -26,20 +26,20 @@
                 >My list</router-link
               >
             </li>
-            <li class="nav-item" v-if="!isAuth">
-              <router-link
-                :to="{ name: 'sign-in' }"
-                class="block ml-4 p-2 lg:px-4 py-2 bg-green-500 text-white hover:bg-green-800 rounded-lg transition duration-150 ease-in-out"
-                >Sign in</router-link
-              >
-            </li>
-            <li class="nav-item" v-else>
+            <li class="nav-item" v-if="$store.state.isAuthenticated">
               <button
                 @click="logoutUser"
                 class="block pr-2 lg:px-4 py-2 text-red-500 hover:text-red-800 rounded-lg transition duration-150 ease-in-out"
               >
                 Log out
               </button>
+            </li>
+            <li class="nav-item" v-else>
+              <router-link
+                :to="{ name: 'sign-in' }"
+                class="block ml-4 p-2 lg:px-4 py-2 bg-green-500 text-white hover:bg-green-800 rounded-lg transition duration-150 ease-in-out"
+                >Sign in</router-link
+              >
             </li>
           </ul>
         </div>
@@ -49,6 +49,9 @@
 </template>
 
 <script>
+import { signOut } from "firebase/auth";
+import { auth } from "@/main";
+
 export default {
   data() {
     return {
@@ -62,7 +65,11 @@ export default {
   },
   methods: {
     logoutUser() {
-      this.$store.commit("CLEAR_USER");
+      signOut(auth).then(() => {
+        this.$store.commit("CLEAR_USER");
+
+        this.$router.push({ name: "sign-in" });
+      });
     },
   },
 };
