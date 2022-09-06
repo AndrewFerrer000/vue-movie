@@ -66,7 +66,7 @@
 <script>
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { auth } from "@/main";
-import { addData } from "@/firestore-contoller";
+import { addToList } from "@/firestore-contoller";
 export default {
   data() {
     return {
@@ -79,7 +79,7 @@ export default {
     async signInUser() {
       signInWithEmailAndPassword(auth, this.email, this.password)
         .then(({ user }) => {
-          addData(user.uid);
+          addToList(user.uid);
           this.$store.commit("SET_USER", user);
           this.$router.replace("/");
         })

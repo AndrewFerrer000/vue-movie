@@ -2,6 +2,8 @@
 import { createStore } from "vuex";
 import axios from "axios";
 
+import { getData } from "@/firestore-contoller";
+
 // Themoviedb.api
 const MOVIE_API_KEY = "b43b1dbab4ea9fb0ea4acb0101b1d758";
 const MOVIE_API_ENDPOINT = "https://api.themoviedb.org/3";
@@ -93,10 +95,17 @@ export default createStore({
       commit("SET_SIMILARMOVIES", data);
     },
 
-    async getMovieList({ commit }) {
-      const localList = JSON.parse(localStorage.getItem("mylist")) || [];
+    async getMovieList({ commit, state }) {
+      let movieList = [];
+      if (state.isAuthenticated) {
+        const DBMovieList = await getData(state.user.data.uid);
+        movieList = DBMovieList || [];
+      } else {
+        movieList = JSON.parse(localStorage.getItem("mylist")) || [];
+      }
+
       const newList = [];
-      for (const id of localList) {
+      for (const id of movieList) {
         const { data } = await axios.get(
           `${MOVIE_API_ENDPOINT}/movie/${id}?api_key=${MOVIE_API_KEY}`
         );

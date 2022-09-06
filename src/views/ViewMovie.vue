@@ -180,7 +180,7 @@ import CPreviewTrailer from "@/components/CPreviewTrailer.vue";
 import CCastCard from "@/components/CCastCard.vue";
 
 import { mapState } from "vuex";
-import { addData } from "@/firestore-contoller";
+import { addToList, removeToList } from "@/firestore-contoller";
 
 export default {
   components: {
@@ -200,7 +200,9 @@ export default {
   },
   watch: {
     "$route.params.id": function () {
+      this.isLoading = true;
       this.loadMovies();
+      document.getElementById("app").scrollTop = 0;
       this.isAdded = false;
     },
   },
@@ -231,21 +233,21 @@ export default {
         localStorage.setItem("mylist", JSON.stringify(mylist));
 
         if (this.isAuth) {
-          addData(this.currentUserID);
+          addToList(this.currentUserID);
         }
         this.toggleAddRemoveBtn();
       }
     },
     removeList(id) {
+      if (this.isAuth) {
+        removeToList(this.currentUserID, this.movieDetails.id);
+      }
+
       this.isAdded = false;
       const mylist = JSON.parse(localStorage.getItem("mylist")) || [];
       if (mylist) {
         const newList = mylist.filter((movieId) => movieId !== id);
         localStorage.setItem("mylist", JSON.stringify(newList));
-
-        if (this.isAuth) {
-          addData(this.currentUserID);
-        }
         this.toggleAddRemoveBtn();
       }
     },
@@ -255,11 +257,13 @@ export default {
       // toggle buttons depend on statement
       const list = (await JSON.parse(localStorage.getItem("mylist"))) || [];
 
-      list.forEach((id) => {
-        if (id == this.movieDetails.id) {
-          return (this.isAdded = true);
-        }
-      });
+      if (list) {
+        list.forEach((id) => {
+          if (id == this.movieDetails.id) {
+            return (this.isAdded = true);
+          }
+        });
+      }
     },
     closeTrailer() {
       this.openTrailer = false;

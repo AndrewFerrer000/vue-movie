@@ -125,14 +125,7 @@
     </div>
   </div>
 
-  <div v-else-if="isLoading" class="w-full h-full text-center pt-20">
-    <div class="flex items-center justify-center gap-5">
-      <i
-        class="bx bx-loader-alt text-5xl font-bold text-green-500 animate-spin"
-      />
-      <p class="tracking-widest text-3xl">Loading...</p>
-    </div>
-  </div>
+  <CLoader v-else-if="isLoading" />
 
   <div v-else class="w-full h-full text-center pt-20">
     <h1 class="text-3xl">
@@ -148,11 +141,13 @@
 
 <script>
 import CMovieCard from "@/components/CMovieCard.vue";
+import CLoader from "@/components/CLoader.vue";
 
 export default {
   name: "HomeView",
   components: {
     CMovieCard,
+    CLoader,
   },
   data() {
     return {
@@ -172,6 +167,8 @@ export default {
     "$route.query"(newQuery) {
       if (this.$route.name == "home") {
         this.loadMovies(newQuery.page);
+        this.isLoading = true;
+        document.getElementById("app").scrollTop = 0;
       }
       if (this.$route.name == "search") {
         this.searchMovies(newQuery.page);

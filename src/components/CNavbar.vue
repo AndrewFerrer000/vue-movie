@@ -67,7 +67,7 @@ export default {
     logoutUser() {
       signOut(auth).then(() => {
         this.$store.commit("CLEAR_USER");
-
+        localStorage.removeItem("mylist");
         this.$router.push({ name: "sign-in" });
       });
     },

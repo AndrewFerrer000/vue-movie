@@ -1,5 +1,5 @@
 <template>
-  <div class="mylist flex flex-col gap-y-10 px-10">
+  <div v-if="!isLoading" class="mylist flex flex-col gap-y-10 px-10">
     <div
       v-if="!isAuth"
       class="w-full bg-yellow-300 mt-5 py-5 px-10 rounded-lg border-2 border-yellow-500 shadow-lg"
@@ -28,6 +28,7 @@
       </div>
     </div>
   </div>
+  <div v-else-if="isLoading">LOADING...</div>
 </template>
 
 <script>
@@ -49,6 +50,9 @@ export default {
     isAuth() {
       return this.$store.state.isAuthenticated;
     },
+    isLoading() {
+      return this.movies.results == [] ? true : false;
+    },
   },
   methods: {
     async loadList() {
@@ -64,12 +68,9 @@ export default {
         });
         newList.push({ ...item, genre_ids: getIds });
       });
-      this.isEmpty = false;
       // make sure to store it in object with the key name 'results'
       this.movies = { results: newList };
     },
   },
 };
 </script>
-
-<style></style>
